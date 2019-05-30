@@ -1,20 +1,16 @@
-FROM mcr.microsoft.com/dotnet/core/aspnet:2.1-stretch-slim AS base
+FROM microsoft/dotnet:sdk AS build-env
 WORKDIR /app
-EXPOSE 80
-EXPOSE 443
 
-FROM mcr.microsoft.com/dotnet/core/sdk:2.1-stretch AS build
-WORKDIR /src
-COPY ["src/Services/SentimentAnalysis/SentimentAnalysis.API/SentimentAnalysis.API.csproj", "src/Services/SentimentAnalysis/SentimentAnalysis.API/"]
-RUN dotnet restore "src/Services/SentimentAnalysis/SentimentAnalysis.API/SentimentAnalysis.API.csproj"
-COPY . .
-WORKDIR "/src/src/Services/SentimentAnalysis/SentimentAnalysis.API"
-RUN dotnet build "SentimentAnalysis.API.csproj" -c Release -o /app
+# Copy csproj and restore as distinct layers
+COPY *.csproj ./
+RUN dotnet restore
 
-FROM build AS publish
-RUN dotnet publish "SentimentAnalysis.API.csproj" -c Release -o /app
+# Copy everything else and build
+COPY . ./
+RUN dotnet publish -c Release -o out
 
-FROM base AS final
+# Build runtime image
+FROM microsoft/dotnet:aspnetcore-runtime
 WORKDIR /app
-COPY --from=publish /app .
+COPY --from=build-env /app/out .
 ENTRYPOINT ["dotnet", "SentimentAnalysis.API.dll"]
