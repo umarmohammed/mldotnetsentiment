@@ -1,0 +1,16 @@
+<h2>Live Sentiment</h2>
+<div *ngIf="sentiment.loading$ | async; else value">
+  loading...
+</div>
+<ng-template #value>
+  {{ sentiment.value$ | async }}
+</ng-template>
+
+<p>
+  <textarea
+    cols="45"
+    placeholder="Type any text like a short product review"
+    [value]="text"
+    (keyup)="sentiment.predict($event.target.value)"
+  ></textarea>
+</p>

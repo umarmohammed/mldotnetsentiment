@@ -31,6 +31,13 @@ namespace SentimentAnalysis.API
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseCors(policy =>
+            {
+                policy.AllowAnyHeader();
+                policy.AllowAnyMethod();
+                policy.AllowAnyOrigin();
+            });
+
             app.UseMvc();
         }
     }
