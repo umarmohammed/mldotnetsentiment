@@ -11,6 +11,7 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
             placeholder="Type some text"
             (keyup)="predict.emit($event.target.value)"
           />
+          <mat-hint>Type any text like a short product review</mat-hint>
         </mat-form-field>
         <mat-spinner
           [class.show]="loading"
